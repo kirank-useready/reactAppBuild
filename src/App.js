@@ -5,6 +5,7 @@ import TestInsertEndPoints from "./testinsertendpoints";
 import TestUpdateEndPoints from "./testupdateendpoints";
 import {rest_server_url} from './constants'
 require("./App.css");
+const {tableausheetName} = require('./SheetsModule.js'); 
 
 //Needed
 const { tableau } = window;
