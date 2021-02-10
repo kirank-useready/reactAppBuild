@@ -15,7 +15,7 @@ function App() {
 
   useEffect(() => {
     tableau.extensions.initializeAsync().then(() => {
-        const sheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === 'Extension Input');
+        const sheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === tableausheetName.sheet1);
         // console.log(sheet)
         sheet.getSummaryDataAsync().then(info => {
           const username = info.data[0][1].value;
