@@ -7,13 +7,14 @@ import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import {rest_server_url} from './constants'
+import MuiAlert from "@material-ui/lab/Alert";
 //Needed
 const { tableau } = window;
 
 const useStyles = makeStyles({
     container: {
         paddingTop: "6%",
-        borderTopStyle: "dotted",
+        borderTopStyle: "solid",
         marginTop: "3%",
     },
     userInfo: {
@@ -81,6 +82,7 @@ function DataTable(props) {
     // const [category, setCategory] = React.useState({});
     const [field, setField] = React.useState({});
     const [open, setOpen] = React.useState(false);
+    const [erropen, setErrorOpen] = React.useState(false)
     const [userRole, setRole] = React.useState('');
     const db_keys = ['MY(Contract Date)','Sales', 'Revenue Budget', 'Category','Row_ID'];
     const keys = ['MY(Contract Date)','Sales', 'Revenue Budget', 'Category'];
@@ -134,6 +136,7 @@ function DataTable(props) {
           return;
         }
         setOpen(false);
+        setErrorOpen(false);
       };
 
     const handleSaveOld = () => {
@@ -167,6 +170,8 @@ function DataTable(props) {
     const handleSave = () => {
       console.log("writebck",JSON.stringify(writebackData)); 
       setOpen(true);
+      //setOpen(false);
+     // let writebackData1 = {"Row_ID":"6543","Adjusted Forecast":"90"};
       try{        
         const requestOptions = {
             method: 'POST',
@@ -178,11 +183,12 @@ function DataTable(props) {
         .then((jsonResponse) => {
           console.log("then", jsonResponse)
         }).catch((error) => {
-          console.log("error", error)
+          
+          console.log("error", error);
         });
       }
       catch{
-        console.log("Couldnt save data to table..")
+        setErrorOpen(true);
       }
   }
   function refreshWorksheetData(){
@@ -244,8 +250,9 @@ function DataTable(props) {
                 <label className={classes.label} >{column_name}</label>
                 <input type="number" className={classes.input} placeholder={props.rows[0][i].toFixed(2)} name={column_name} id={column_name} onChange={handleInputChange}></input>
                 </div>
+                <div className={classes.row}>
                 <ColorButton className={classes.button} variant="contained" color="primary" onClick={handleSave}>Save</ColorButton></div>
-
+                </div>
                 );
             }
         }
@@ -259,30 +266,25 @@ function DataTable(props) {
         const keyName = target.name;
         writebackData[keyName] = value;
     }
-
+    function Alert(props) {
+      return <MuiAlert elevation={6} variant="filled" {...props} />;
+    }
     const classes = useStyles();
     return (
         <div className={classes.container}>
         <div>
             {getTableContent(props.headers)}
         </div>
-        <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        open={open}
-        autoHideDuration={3000}
-        // onClose={handleClose}
-        message="Saved Successfully !!"
-        action={
-          <React.Fragment>
-            <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </React.Fragment>
-        }
-      />
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose} >
+        <Alert onClose={handleClose} >
+        Saved Successfully !!
+        </Alert>
+      </Snackbar>
+       <Snackbar open={erropen} autoHideDuration={6000} onClose={handleClose} >
+        <Alert onClose={handleClose} severity="error">
+        Couldnt save data to table..
+        </Alert>
+      </Snackbar> 
         </div>
                     )
 }
