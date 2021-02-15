@@ -8,6 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import {rest_server_url} from './constants'
 import MuiAlert from "@material-ui/lab/Alert";
+const {datatableColumn} = require('./TableColumnModule.js'); 
 //Needed
 const { tableau } = window;
 
@@ -216,9 +217,11 @@ function DataTable(props) {
     }
 
     const getTableContent = headers => {
+      console.log("rows",props.rows)
         let content = [];
         let column_name = '';
-        console.log(headers)
+        const [col1,col2,col3,col4,col5,col6] = datatableColumn;
+        console.log("headers",headers)
         for (let i = 0; i < headers.length; i++) {
           if(db_keys.includes(headers[i])) {
             writebackData[headers[i]] = props.rows[0][i];
@@ -226,7 +229,7 @@ function DataTable(props) {
           if(keys.includes(headers[i])) {
             let label = headers[i];
             let values = props.rows[0][i];
-          if(headers[i] == 'MY(Contract Date)') {
+          if(headers[i] == col1) {
             // if(headers[i] == 'ContractDate') {
 
                 label = 'Contract Date';
@@ -240,16 +243,18 @@ function DataTable(props) {
             <span className={classes.value}>{values}</span>
             </div>);
         } else if(headers[i] == 'Measure Values'){
+          
             const measureKey = props.rows[0][i-1];
+            console.log("measure",measureKey);
             const keys = measureKey.split('].[').join(',').split(':');
                 if(keys[1] == 'Calculation_1454662740677197828') {
-                    column_name = 'Adjusted Forecast';
+                    column_name = col4;
                 } else if (keys[1] == 'Calculation_1454662740669812737'){
-                    column_name = 'Revenue Budget';
+                    column_name = col3;
                 } else {
                     column_name = keys[1];
                 }
-            if(['Viewer','viewer'].includes(userRole.role) || column_name != 'Adjusted Forecast'){   // 
+            if(['Viewer','viewer'].includes(userRole.role) || column_name != col4){   // 
                 content.push(
                 <React.Fragment>
                 <div className={classes.row} id="form">
