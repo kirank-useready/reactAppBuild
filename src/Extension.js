@@ -5,6 +5,7 @@ import SheetListComponent from "./SheetListComponent";
 import DataTable from "./DataTable";
 import {fetchUserRole} from './restUtil';
 const {tableau} = window;
+const {tableausheetName} = require('./SheetsModule.js'); 
 
 function Extension(props){
 //function Extension(){
@@ -25,7 +26,7 @@ function Extension(props){
             const sheetNames = tableau.extensions.dashboardContent.dashboard.worksheets.map(worksheet => worksheet.name);
             setSheetNames(sheetNames);
 
-            const selectedSheet =  getSelectedSheet('Extension Input');
+            const selectedSheet =  getSelectedSheet(tableausheetName.sheet1);
             setSelectedSheet(selectedSheet);
             console.log('selectedSheet',selectedSheet)           
             
@@ -41,7 +42,7 @@ function Extension(props){
 
     const getSelectedSheet = (sheet) => {
         const sheetName = sheet || selectedSheet;
-        return tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === 'Extension Input');
+        return tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === tableausheetName.sheet1);
     };
     const loadSelectedMarks = (sheet) => {
         if(unregisterEventFn){
@@ -98,7 +99,7 @@ function Extension(props){
 
     const mainContent = (rows.length > 0)
         ? (<DataTable username={userName} role={userRole} rows={rows} headers={headers} selectedSheet={selectedSheet}/>)
-        : (<h4>Please click on the table above to update adjusted forecast11.</h4>);
+        : (<h4>Please click on the table above to update adjusted forecast111.</h4>);
 
 let output = <div>{mainContent}</div>;
     //if (isLoading) {
