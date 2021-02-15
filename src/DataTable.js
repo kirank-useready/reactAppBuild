@@ -138,7 +138,8 @@ function DataTable(props) {
 
     const handleSaveOld = () => {
         setOpen(true);
-        try{        
+        try{    
+             
           const requestOptions = {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -164,6 +165,7 @@ function DataTable(props) {
       }
     }
     const handleSave = () => {
+      console.log("writebck",JSON.stringify(writebackData)); 
       setOpen(true);
       try{        
         const requestOptions = {
@@ -174,9 +176,9 @@ function DataTable(props) {
         fetch(rest_server_url+'updatedata', requestOptions)
         .then(CheckError)
         .then((jsonResponse) => {
-          console.log(jsonResponse)
+          console.log("then", jsonResponse)
         }).catch((error) => {
-          console.log(error)
+          console.log("error", error)
         });
       }
       catch{
