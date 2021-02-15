@@ -99,7 +99,7 @@ function Extension(props){
 
     const mainContent = (rows.length > 0)
         ? (<DataTable username={userName} role={userRole} rows={rows} headers={headers} selectedSheet={selectedSheet}/>)
-        : (<h4>Please click on the table above to update adjusted forecast111.</h4>);
+        : (<h4>Please click on the table above to update adjusted forecast.</h4>);
 
 let output = <div>{mainContent}</div>;
     //if (isLoading) {

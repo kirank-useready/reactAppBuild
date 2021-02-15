@@ -55,6 +55,12 @@ const useStyles = makeStyles({
         fontFamily: "Trebuchet MS",
         fontWeight: 600,
     },
+    savebtndiv: {
+      width: "65px"
+    },
+    pl10: {
+      paddingLeft:"10px"
+    },
     input: {
         // position: "absolute",
         // left: "60%",
@@ -62,7 +68,8 @@ const useStyles = makeStyles({
         fontFamily: "Trebuchet MS",
         fontWeight: 600,
         width: "110px",
-    }
+    },
+    
 
   });
   const ColorButton = withStyles((theme) => ({
@@ -119,15 +126,19 @@ function DataTable(props) {
     // }
 
     useEffect(() => {
-      console.log('under DT, endpoint getuserrole')
+      console.log('under DT, endpoint getuserrole');
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({'username' : props.username})
       };
         fetch(rest_server_url+'getuserrole',requestOptions)
-            .then(response => response.json())
-            .then(data => setRole(data));
+            .then(response => response.json()
+            )
+            .then(data => setRole(data)
+            ).catch((error) => {
+              console.log('error', error)
+            });
     }, []);
     
 
@@ -208,7 +219,6 @@ function DataTable(props) {
         let content = [];
         let column_name = '';
         console.log(headers)
-        console.log(userRole)
         for (let i = 0; i < headers.length; i++) {
           if(db_keys.includes(headers[i])) {
             writebackData[headers[i]] = props.rows[0][i];
@@ -240,18 +250,25 @@ function DataTable(props) {
                     column_name = keys[1];
                 }
             if(['Viewer','viewer'].includes(userRole.role) || column_name != 'Adjusted Forecast'){   // 
-                content.push(<div className={classes.row} id="form">
+                content.push(
+                <React.Fragment>
+                <div className={classes.row} id="form">
                 <label className={classes.label} >{column_name}</label>
                 <span className={classes.value}>{props.rows[0][i].toFixed(2)}</span>
-                </div>);
+                </div>
+                <div className={classes.row + ' ' + classes.savebtndiv}>
+                <ColorButton className={classes.button+ ' '+ classes.pl10} disabled variant="contained" color="secondary">Save</ColorButton>
+                </div>
+                </React.Fragment>
+                );
  
             } else {
                 content.push(<div><div className={classes.row} id="form">
                 <label className={classes.label} >{column_name}</label>
                 <input type="number" className={classes.input} placeholder={props.rows[0][i].toFixed(2)} name={column_name} id={column_name} onChange={handleInputChange}></input>
                 </div>
-                <div className={classes.row}>
-                <ColorButton className={classes.button} variant="contained" color="primary" onClick={handleSave}>Save</ColorButton></div>
+                <div className={classes.row + ' ' + classes.savebtndiv}>
+                <ColorButton className={classes.button+ ' '+ classes.pl10} variant="contained" color="primary" onClick={handleSave}>Save</ColorButton></div>
                 </div>
                 );
             }
