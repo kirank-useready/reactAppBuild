@@ -8,10 +8,19 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import {rest_server_url} from './constants'
 import MuiAlert from "@material-ui/lab/Alert";
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Slide from '@material-ui/core/Slide';
 const {datatableColumn} = require('./TableColumnModule.js'); 
+
 //Needed
 const { tableau } = window;
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 const useStyles = makeStyles({
     container: {
         paddingTop: "6%",
@@ -86,6 +95,7 @@ const useStyles = makeStyles({
 
 function DataTable(props) {
     const [editAdjustedForecast, setAdjustedForecast] = React.useState({});
+    const [dialogOpen, setDialogOpen] = React.useState(false);
     // const [date, setDate] = React.useState({});
     // const [category, setCategory] = React.useState({});
     const [field, setField] = React.useState({});
@@ -150,6 +160,12 @@ function DataTable(props) {
         setOpen(false);
         setErrorOpen(false);
       };
+      const handleDialogOpen = () => {
+        setDialogOpen(true);
+      };
+      const handleDialogClose = () => {
+        setDialogOpen(false);
+      };
 
     const handleSaveOld = () => {
         setOpen(true);
@@ -183,7 +199,7 @@ function DataTable(props) {
       console.log("writebck",JSON.stringify(writebackData)); 
       setOpen(true);
       //setOpen(false);
-     // let writebackData1 = {"Row_ID":"6543","Adjusted Forecast":"90"};
+     // let writebackData1 = [{"Row_ID":"6543","Adjusted Forecast":"90"}];
       try{        
         const requestOptions = {
             method: 'POST',
@@ -193,7 +209,7 @@ function DataTable(props) {
         fetch(rest_server_url+'updatedata', requestOptions)
         .then(CheckError)
         .then((jsonResponse) => {
-          console.log("then", jsonResponse)
+          handleDialogClose();
         }).catch((error) => {
           
           console.log("error", error);
@@ -222,62 +238,71 @@ function DataTable(props) {
         let column_name = '';
         const [col1,col2,col3,col4,col5,col6] = datatableColumn;
         console.log("headers",headers)
-        for (let i = 0; i < headers.length; i++) {
-          if(db_keys.includes(headers[i])) {
-            writebackData[headers[i]] = props.rows[0][i];
-          }
-          if(keys.includes(headers[i])) {
-            let label = headers[i];
-            let values = props.rows[0][i];
-          if(headers[i] == col1) {
-            // if(headers[i] == 'ContractDate') {
+        for(let j =0;j< props.rows.length;j++){
+            for (let i = 0; i < headers.length; i++) {
+              if(db_keys.includes(headers[i])) {
+                writebackData[headers[i]] = props.rows[j][i];
+              }
+              if(keys.includes(headers[i])) {
+                let label = headers[i];
+                let values = props.rows[j][i];
+              if(headers[i] == col1) {
+                // if(headers[i] == 'ContractDate') {
 
-                label = 'Contract Date';
-                let monthNum  = values%100;
-                const months = [ "January", "February", "March", "April", "May", "June", 
-                "July", "August", "September", "October", "November", "December" ];
-                 values = months[monthNum-1] + ' ' + values.toString().substring(0,4);
-          }
-          content.push(<div className={classes.row} id="form">
-            <label className={classes.label} >{label}</label>
-            <span className={classes.value}>{values}</span>
-            </div>);
-        } else if(headers[i] == 'Measure Values'){
-          
-            const measureKey = props.rows[0][i-1];
-            console.log("measure",measureKey);
-            const keys = measureKey.split('].[').join(',').split(':');
-                if(keys[1] == 'Calculation_1454662740677197828') {
-                    column_name = col4;
-                } else if (keys[1] == 'Calculation_1454662740669812737'){
-                    column_name = col3;
+                    label = 'Contract Date';
+                    let monthNum  = values%100;
+                    const months = [ "January", "February", "March", "April", "May", "June", 
+                    "July", "August", "September", "October", "November", "December" ];
+                    values = months[monthNum-1] + ' ' + values.toString().substring(0,4);
+              }
+              content.push(<div className={classes.row} id="form">
+                <label className={classes.label} >{label}</label>
+                <span className={classes.value}>{values}</span>
+                </div>);
+            } else if(headers[i] == 'Measure Values'){
+              
+                const measureKey = props.rows[j][i-1];
+                console.log("measure",measureKey);
+                const keys = measureKey.split('].[').join(',').split(':');
+                    if(keys[1] == 'Calculation_1454662740677197828') {
+                        column_name = col4;
+                    } else if (keys[1] == 'Calculation_1454662740669812737'){
+                        column_name = col3;
+                    } else {
+                        column_name = keys[1];
+                    }
+                if(['Viewer','viewer'].includes(userRole.role) || column_name != col4){   // 
+                    content.push(
+                    <React.Fragment>
+                    <div className={classes.row} id="form">
+                    <label className={classes.label} >{column_name}</label>
+                    <span className={classes.value}>{props.rows[j][i].toFixed(2)}</span>
+                    </div>
+                    </React.Fragment>
+                    );
+                    if(props.rows.length - j == 1){
+                     content.push(<div className={classes.row + ' ' + classes.savebtndiv}>
+                     <ColorButton className={classes.button+ ' '+ classes.pl10} disabled variant="contained" color="secondary">Save</ColorButton>
+                     </div>)
+                    }
+    
                 } else {
-                    column_name = keys[1];
+                    content.push(
+                      <React.Fragment>
+                      <div className={classes.row} id="form">
+                      <label className={classes.label} >{column_name}</label>
+                      <input type="number" className={classes.input} placeholder={props.rows[j][i].toFixed(2)} name={column_name} id={column_name} onChange={handleInputChange}></input>
+                      </div>
+                    
+                    </React.Fragment>
+                    );
+                    if(props.rows.length - j == 1){
+                      content.push(<div className={classes.row + ' ' + classes.savebtndiv}>
+                      <ColorButton className={classes.button+ ' '+ classes.pl10} variant="contained" color="primary" onClick={handleDialogOpen}>Save</ColorButton></div>)
+                    }
                 }
-            if(['Viewer','viewer'].includes(userRole.role) || column_name != col4){   // 
-                content.push(
-                <React.Fragment>
-                <div className={classes.row} id="form">
-                <label className={classes.label} >{column_name}</label>
-                <span className={classes.value}>{props.rows[0][i].toFixed(2)}</span>
-                </div>
-                <div className={classes.row + ' ' + classes.savebtndiv}>
-                <ColorButton className={classes.button+ ' '+ classes.pl10} disabled variant="contained" color="secondary">Save</ColorButton>
-                </div>
-                </React.Fragment>
-                );
- 
-            } else {
-                content.push(<div><div className={classes.row} id="form">
-                <label className={classes.label} >{column_name}</label>
-                <input type="number" className={classes.input} placeholder={props.rows[0][i].toFixed(2)} name={column_name} id={column_name} onChange={handleInputChange}></input>
-                </div>
-                <div className={classes.row + ' ' + classes.savebtndiv}>
-                <ColorButton className={classes.button+ ' '+ classes.pl10} variant="contained" color="primary" onClick={handleSave}>Save</ColorButton></div>
-                </div>
-                );
             }
-        }
+            }
         }
         return content;
       };
@@ -307,8 +332,32 @@ function DataTable(props) {
         Couldnt save data to table..
         </Alert>
       </Snackbar> 
-        </div>
-                    )
+      
+      <Dialog
+        open={dialogOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleDialogClose}
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle id="alert-dialog-slide-title">Confirm  </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+           Do you want to save the records? 
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSave} color="primary">
+            Ok
+          </Button>
+          <Button onClick={handleDialogClose} color="primary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+        )
 }
 
 export default DataTable;
