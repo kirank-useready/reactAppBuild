@@ -102,12 +102,13 @@ function DataTable(props) {
     const [open, setOpen] = React.useState(false);
     const [erropen, setErrorOpen] = React.useState(false)
     const [userRole, setRole] = React.useState('');
-    const db_keys = ['MY(Contract Date)','Sales', 'Revenue Budget', 'Category','Row_ID'];
+    const db_keys = ['MY(Contract Date)','Sales', 'Revenue Budget', 'Category','Row ID'];
     const keys = ['MY(Contract Date)','Sales', 'Revenue Budget', 'Category'];
     // const keys = ['MY(Contract Date)','Sales', 'Revenue Budget', 'Category','username','Row_ID'];
     //const keys = ['ContractDate','username','Sales', 'Revenue Budget', 'Category'];
     const [message, setMessage] = React.useState('');
     let writebackData = {};
+    let writebackDataCopy = [];
     // const worksheet = props.selectedSheet;
     // setSelectedSheet(worksheet);
     const [username, setUsername] = React.useState();
@@ -160,32 +161,12 @@ function DataTable(props) {
         setOpen(false);
         setErrorOpen(false);
       };
-      const handleDialogOpen = () => {
+      const handleDialogOpen = (event) => {
         setDialogOpen(true);
       };
       const handleDialogClose = () => {
         setDialogOpen(false);
       };
-
-    const handleSaveOld = () => {
-        setOpen(true);
-        try{    
-             
-          const requestOptions = {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(writebackData)
-          };
-          fetch(rest_server_url+'updatedata', requestOptions)
-              .then(response => {
-                  console.log(response.json());                
-                  refreshWorksheetData();
-              });
-        }
-        catch{
-          throw new Error("Couldnt save data to table")
-        }
-    }
 
     function CheckError(response) {
       if (response.status >= 200 && response.status <= 299) {
@@ -196,10 +177,11 @@ function DataTable(props) {
       }
     }
     const handleSave = () => {
-      console.log("writebck",JSON.stringify(writebackData)); 
+      console.log("writebckcopy",JSON.stringify(writebackDataCopy)); 
       setOpen(true);
       //setOpen(false);
-     // let writebackData1 = [{"Row_ID":"6543","Adjusted Forecast":"90"}];
+    // let writebackData = [{"Row_ID":6541,"Forecast_Amount":100},
+     //{"Row_ID":6542,"Forecast_Amount":100}];
       try{        
         const requestOptions = {
             method: 'POST',
@@ -241,7 +223,13 @@ function DataTable(props) {
         for(let j =0;j< props.rows.length;j++){
             for (let i = 0; i < headers.length; i++) {
               if(db_keys.includes(headers[i])) {
-                writebackData[headers[i]] = props.rows[j][i];
+                if(headers[i] == "Row ID"){
+                  writebackData['Row_ID'] = props.rows[j][i];
+                }
+                else {
+                  writebackData[headers[i]] = props.rows[j][i];
+                }
+               
               }
               if(keys.includes(headers[i])) {
                 let label = headers[i];
@@ -298,11 +286,12 @@ function DataTable(props) {
                     );
                     if(props.rows.length - j == 1){
                       content.push(<div className={classes.row + ' ' + classes.savebtndiv}>
-                      <ColorButton className={classes.button+ ' '+ classes.pl10} variant="contained" color="primary" onClick={handleDialogOpen}>Save</ColorButton></div>)
+                      <ColorButton className={classes.button+ ' '+ classes.pl10} variant="contained" color="primary" onClick={handleSave}>Save</ColorButton></div>)
                     }
                 }
             }
             }
+            writebackDataCopy = [...writebackDataCopy,writebackData];
         }
         return content;
       };
@@ -312,6 +301,7 @@ function DataTable(props) {
         const value = target.value;
         const keyName = target.name;
         writebackData[keyName] = value;
+        console.log('writback handlechnage',JSON.stringify(writebackData));
     }
     function Alert(props) {
       return <MuiAlert elevation={6} variant="filled" {...props} />;
