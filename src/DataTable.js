@@ -107,7 +107,7 @@ function DataTable(props) {
     // const keys = ['MY(Contract Date)','Sales', 'Revenue Budget', 'Category','username','Row_ID'];
     //const keys = ['ContractDate','username','Sales', 'Revenue Budget', 'Category'];
     const [message, setMessage] = React.useState('');
-    let writebackData = {};
+   // let writebackData = {};
     let writebackDataCopy = [];
     // const worksheet = props.selectedSheet;
     // setSelectedSheet(worksheet);
@@ -186,7 +186,7 @@ function DataTable(props) {
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(writebackData)
+            body: JSON.stringify(writebackDataCopy)
         };
         fetch(rest_server_url+'updatedata', requestOptions)
         .then(CheckError)
@@ -218,12 +218,16 @@ function DataTable(props) {
       console.log("rows",props.rows)
         let content = [];
         let column_name = '';
+        let headersName = '';
         const [col1,col2,col3,col4,col5,col6] = datatableColumn;
         console.log("headers",headers)
         for(let j =0;j< props.rows.length;j++){
+          let writebackData = new Object();
             for (let i = 0; i < headers.length; i++) {
+             
               if(db_keys.includes(headers[i])) {
                 if(headers[i] == "Row ID"){
+                  headersName = props.rows[j][i];
                   writebackData['Row_ID'] = props.rows[j][i];
                 }
                 else {
@@ -250,10 +254,12 @@ function DataTable(props) {
             } else if(headers[i] == 'Measure Values'){
               
                 const measureKey = props.rows[j][i-1];
+                const lastRow = props.rows.length - 1;
                 console.log("measure",measureKey);
                 const keys = measureKey.split('].[').join(',').split(':');
                     if(keys[1] == 'Calculation_1454662740677197828') {
                         column_name = col4;
+                        writebackData['Forecast_Amount'] = props.rows[j][lastRow];
                     } else if (keys[1] == 'Calculation_1454662740669812737'){
                         column_name = col3;
                     } else {
@@ -279,7 +285,7 @@ function DataTable(props) {
                       <React.Fragment>
                       <div className={classes.row} id="form">
                       <label className={classes.label} >{column_name}</label>
-                      <input type="number" className={classes.input} placeholder={props.rows[j][i].toFixed(2)} name={column_name} id={column_name} onChange={handleInputChange}></input>
+                      <input type="number" className={classes.input} placeholder={props.rows[j][i].toFixed(2)} name={column_name} id={column_name} headerRow={headersName} onChange={handleInputChange}></input>
                       </div>
                     
                     </React.Fragment>
@@ -300,8 +306,17 @@ function DataTable(props) {
         const target = event.target;
         const value = target.value;
         const keyName = target.name;
-        writebackData[keyName] = value;
-        console.log('writback handlechnage',JSON.stringify(writebackData));
+        const rowHeader = event.currentTarget.attributes['headerRow'].value;
+        
+       // writebackData[keyName] = value;
+       console.log("rowheader",rowHeader)
+       for(let i=0; i<writebackDataCopy.length;i++){
+         console.log("forwritbackcopy", writebackDataCopy[i].Row_ID)
+         if(writebackDataCopy[i].Row_ID == rowHeader){
+           writebackDataCopy[i].Forecast_Amount = value;
+         }
+       }
+        
     }
     function Alert(props) {
       return <MuiAlert elevation={6} variant="filled" {...props} />;
