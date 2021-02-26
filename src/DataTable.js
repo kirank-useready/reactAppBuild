@@ -6,7 +6,6 @@ import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import {rest_server_url} from './constants'
 import MuiAlert from "@material-ui/lab/Alert";
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -14,7 +13,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
-const {datatableColumn} = require('./TableColumnModule.js'); 
+import { ImageFilter2 } from "material-ui/svg-icons";
+const {Config} = require('./Config.js');
 
 //Needed
 const { tableau } = window;
@@ -40,10 +40,8 @@ const useStyles = makeStyles({
     },
     label: {
         fontWeight: 900,
-        // marginRight: 50,
         fontSize: 11,
         fontFamily: "Trebuchet MS",
-        // fontWeight: "bold",
     },
     buttons: {
         float: "right",
@@ -56,11 +54,8 @@ const useStyles = makeStyles({
         fontWeight: 600,
         paddingLeft:"4%",
         marginTop: "6%",
-        // marginLeft: "3%",
     },
     value: {
-        // position: "absolute",
-        // left: "60%",
         fontSize: 11,
         fontFamily: "Trebuchet MS",
         fontWeight: 600,
@@ -72,8 +67,6 @@ const useStyles = makeStyles({
       paddingLeft:"10px"
     },
     input: {
-        // position: "absolute",
-        // left: "60%",
         fontSize: 11,
         fontFamily: "Trebuchet MS",
         fontWeight: 600,
@@ -96,47 +89,16 @@ const useStyles = makeStyles({
 function DataTable(props) {
     const [editAdjustedForecast, setAdjustedForecast] = React.useState({});
     const [dialogOpen, setDialogOpen] = React.useState(false);
-    // const [date, setDate] = React.useState({});
-    // const [category, setCategory] = React.useState({});
     const [field, setField] = React.useState({});
     const [open, setOpen] = React.useState(false);
     const [erropen, setErrorOpen] = React.useState(false)
     const [userRole, setRole] = React.useState('');
-    const db_keys = ['MY(Contract Date)','Sales', 'Revenue Budget', 'Category','Row ID'];
-    const keys = ['MY(Contract Date)','Sales', 'Revenue Budget', 'Category'];
-    // const keys = ['MY(Contract Date)','Sales', 'Revenue Budget', 'Category','username','Row_ID'];
-    //const keys = ['ContractDate','username','Sales', 'Revenue Budget', 'Category'];
+    const db_keys = [Config.Tableau_col1,Config.Tableau_col7, Config.Tableau_col6, Config.Tableau_col3,Config.Tableau_Primarykey];
+    const keys = [Config.Tableau_col1,Config.Tableau_col7, Config.Tableau_col6, Config.Tableau_col3];
     const [message, setMessage] = React.useState('');
-   // let writebackData = {};
     let writebackDataCopy = [];
-    // const worksheet = props.selectedSheet;
-    // setSelectedSheet(worksheet);
     const [username, setUsername] = React.useState();
-    // console.log(props)
-    // useEffect(() => {
-    //   tableau.extensions.initializeAsync().then(() => {
-    //       const sheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === 'Extension Input');
-    //       // setSelectedSheet(sheet);
-    //       sheet.getSummaryDataAsync().then(info => {
-    //         const user = info.data[0][1].value;
-    //         setUsername(user);
-    //     })
-    //   })
-    //   setUserrole();
-    // },[]);
-
-    // const setUserrole = ()=> {
-      
-    //   const requestOptions = {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({'username' : username})
-    //   };
-    //   fetch(rest_server_url+'getuserrole', requestOptions)
-    //   .then(response => response.json())
-    //   .then(data => setRole(data));
-    // }
-
+    
     useEffect(() => {
       console.log('under DT, endpoint getuserrole');
       const requestOptions = {
@@ -144,7 +106,7 @@ function DataTable(props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({'username' : props.username})
       };
-        fetch(rest_server_url+'getuserrole',requestOptions)
+        fetch(Config.rest_server_url+'getuserrole',requestOptions)
             .then(response => response.json()
             )
             .then(data => setRole(data)
@@ -179,16 +141,13 @@ function DataTable(props) {
     const handleSave = () => {
       console.log("writebckcopy",JSON.stringify(writebackDataCopy)); 
       setOpen(true);
-      //setOpen(false);
-    // let writebackData = [{"Row_ID":6541,"Forecast_Amount":100},
-     //{"Row_ID":6542,"Forecast_Amount":100}];
       try{        
         const requestOptions = {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(writebackDataCopy)
         };
-        fetch(rest_server_url+'updatedata', requestOptions)
+        fetch(Config.rest_server_url+'updatedata', requestOptions)
         .then(CheckError)
         .then((jsonResponse) => {
           handleDialogClose();
@@ -219,16 +178,15 @@ function DataTable(props) {
         let content = [];
         let column_name = '';
         let headersName = '';
-        const [col1,col2,col3,col4,col5,col6] = datatableColumn;
         console.log("headers",headers)
         for(let j =0;j< props.rows.length;j++){
           let writebackData = new Object();
             for (let i = 0; i < headers.length; i++) {
              
               if(db_keys.includes(headers[i])) {
-                if(headers[i] == "Row ID"){
+                if(headers[i] == Config.Tableau_Primarykey){
                   headersName = props.rows[j][i];
-                  writebackData['Row_ID'] = props.rows[j][i];
+                  writebackData[Config.Table_1_Primarykey] = props.rows[j][i];
                 }
                 else {
                   writebackData[headers[i]] = props.rows[j][i];
@@ -238,10 +196,10 @@ function DataTable(props) {
               if(keys.includes(headers[i])) {
                 let label = headers[i];
                 let values = props.rows[j][i];
-              if(headers[i] == col1) {
+              if(headers[i] == Config.Tableau_col1) {
                 // if(headers[i] == 'ContractDate') {
 
-                    label = 'Contract Date';
+                    label = Config.lablel1;
                     let monthNum  = values%100;
                     const months = [ "January", "February", "March", "April", "May", "June", 
                     "July", "August", "September", "October", "November", "December" ];
@@ -251,21 +209,22 @@ function DataTable(props) {
                 <label className={classes.label} >{label}</label>
                 <span className={classes.value}>{values}</span>
                 </div>);
-            } else if(headers[i] == 'Measure Values'){
+            } else if(headers[i] == Config.Tableau_col5){
               
                 const measureKey = props.rows[j][i-1];
-                const lastRow = props.rows.length - 1;
+                //const lastRow = props.rows.length - 1;
                 console.log("measure",measureKey);
                 const keys = measureKey.split('].[').join(',').split(':');
-                    if(keys[1] == 'Calculation_1454662740677197828') {
-                        column_name = col4;
-                        writebackData['Forecast_Amount'] = props.rows[j][lastRow];
-                    } else if (keys[1] == 'Calculation_1454662740669812737'){
-                        column_name = col3;
+                    if(keys[1] == Config.Tableau_writeBack_Calculation || keys[1] == Config.Tableau_writeBack_Calculation_preview) {
+                        column_name = Config.Tableau_WriteBack;
+                        writebackData[Config.Tableau_WriteBack] = props.rows[j][Config.Tableau_WriteBack_column_sequence];
+                    }
+                     else if (keys[1] == Config.Calculation1){
+                        column_name = Config.Tableau_col6;
                     } else {
                         column_name = keys[1];
                     }
-                if(['Viewer','viewer'].includes(userRole.role) || column_name != col4){   // 
+                if(['Viewer','viewer'].includes(userRole.role) || column_name != Config.Tableau_WriteBack){   // 
                     content.push(
                     <React.Fragment>
                     <div className={classes.row} id="form">
@@ -285,7 +244,7 @@ function DataTable(props) {
                       <React.Fragment>
                       <div className={classes.row} id="form">
                       <label className={classes.label} >{column_name}</label>
-                      <input type="number" className={classes.input} placeholder={props.rows[j][i].toFixed(2)} name={column_name} id={column_name} headerRow={headersName} onChange={handleInputChange}></input>
+                      <input type="number" className={classes.input}  placeholder={props.rows[j][i].toFixed(2)} name={column_name} id={column_name} headerRow={headersName} onChange={handleInputChange}></input>
                       </div>
                     
                     </React.Fragment>
@@ -307,7 +266,6 @@ function DataTable(props) {
         const value = target.value;
         const keyName = target.name;
         const rowHeader = event.currentTarget.attributes['headerRow'].value;
-        
        // writebackData[keyName] = value;
        console.log("rowheader",rowHeader)
        for(let i=0; i<writebackDataCopy.length;i++){
@@ -315,6 +273,7 @@ function DataTable(props) {
          if(writebackDataCopy[i].Row_ID == rowHeader){
            writebackDataCopy[i].Forecast_Amount = value;
          }
+      
        }
         
     }

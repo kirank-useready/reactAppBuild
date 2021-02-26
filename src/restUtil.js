@@ -1,5 +1,5 @@
 import React from 'react'
-import {rest_server_url} from './constants'
+const {Config} = require('./Config.js');
 
 export function fetchUserRole(username='appadmin') {
     const requestOptions = {
@@ -7,7 +7,7 @@ export function fetchUserRole(username='appadmin') {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({'username' : username})
     };
-    return fetch(rest_server_url+'getuserrole', requestOptions)
+    return fetch(Config.rest_server_url+'getuserrole', requestOptions)
             .then(response => {
                return response.json()
             });

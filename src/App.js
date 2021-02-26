@@ -3,9 +3,8 @@ import React, { useState, useEffect } from "react";
 import Extension from "./Extension";
 import TestInsertEndPoints from "./testinsertendpoints";
 import TestUpdateEndPoints from "./testupdateendpoints";
-import {rest_server_url} from './constants'
 require("./App.css");
-const {tableausheetName} = require('./SheetsModule.js'); 
+const {Config} = require('./Config.js'); 
 
 //Needed
 const { tableau } = window;
@@ -16,8 +15,8 @@ function App() {
 
   useEffect(() => {
     tableau.extensions.initializeAsync().then(() => {
-        const sheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === tableausheetName.sheet1);
-        // console.log(sheet)
+        const sheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === Config.sheet1);
+         console.log("appshhet", sheet)
         sheet.getSummaryDataAsync().then(info => {
           const username = info.data[0][1].value;
           // console.log(username)
@@ -33,7 +32,7 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({'username' : username})
     };
-    fetch(rest_server_url+'getuserrole', requestOptions)
+    fetch(Config.rest_server_url+'getuserrole', requestOptions)
       .then(response => {
           console.log(response.json());
       }); 

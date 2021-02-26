@@ -5,7 +5,7 @@ import SheetListComponent from "./SheetListComponent";
 import DataTable from "./DataTable";
 import {fetchUserRole} from './restUtil';
 const {tableau} = window;
-const {tableausheetName} = require('./SheetsModule.js'); 
+const {Config} = require('./Config.js'); 
 
 function Extension(props){
 //function Extension(){
@@ -26,7 +26,7 @@ function Extension(props){
             const sheetNames = tableau.extensions.dashboardContent.dashboard.worksheets.map(worksheet => worksheet.name);
             setSheetNames(sheetNames);
 
-            const selectedSheet =  getSelectedSheet(tableausheetName.sheet1);
+            const selectedSheet =  getSelectedSheet(Config.sheet1);
             setSelectedSheet(selectedSheet);
             console.log('selectedSheet',selectedSheet)           
             
@@ -42,7 +42,7 @@ function Extension(props){
 
     const getSelectedSheet = (sheet) => {
         const sheetName = sheet || selectedSheet;
-        return tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === tableausheetName.sheet1);
+        return tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === Config.sheet1);
     };
     const loadSelectedMarks = (sheet) => {
         if(unregisterEventFn){
