@@ -137,7 +137,6 @@ function DataTable(props) {
         fetch(Config.rest_server_url+'updatedata', requestOptions)
         .then(CheckError)
         .then((jsonResponse) => {
-          handleDialogClose();
         }).catch((error) => {
           
           console.log("error", error);
