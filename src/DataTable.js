@@ -4,14 +4,7 @@ import './DataTable.css';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
 import MuiAlert from "@material-ui/lab/Alert";
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 import { ImageFilter2 } from "material-ui/svg-icons";
 const {Config} = require('./Config.js');
@@ -122,12 +115,6 @@ function DataTable(props) {
         }
         setOpen(false);
         setErrorOpen(false);
-      };
-      const handleDialogOpen = (event) => {
-        setDialogOpen(true);
-      };
-      const handleDialogClose = () => {
-        setDialogOpen(false);
       };
 
     function CheckError(response) {
@@ -297,29 +284,6 @@ function DataTable(props) {
         </Alert>
       </Snackbar> 
       
-      <Dialog
-        open={dialogOpen}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleDialogClose}
-        aria-labelledby="alert-dialog-slide-title"
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogTitle id="alert-dialog-slide-title">Confirm  </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-           Do you want to save the records? 
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleSave} color="primary">
-            Ok
-          </Button>
-          <Button onClick={handleDialogClose} color="primary">
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
     </div>
         )
 }

@@ -11,7 +11,7 @@ var Config = {
 /*DATABASE TABLE INFORMATION */
 //schema:'',
 Table_1:'forecast',
-Tablea_2:'',
+//Table_2:'',
 /*DATABASE TABLE COLUMNS INFORMATION*/
 Table_1_Primarykey:'Row_ID',
 Table_1_col1:'Category',
@@ -23,10 +23,10 @@ Table_1_col6:'Ship_Date',
 Table_1_col7:'Order_Date',
 Table_1_col8:'Order_Date',
 Table_WriteBack:'Forecast_Amount',
-Table_2_Primarykey:'Row_ID',
-Table_2_col1:'',
-Table_2_col2:'',
-Table_2_col3:'',
+//Table_2_Primarykey:'Row_ID',
+//Table_2_col1:'',
+//Table_2_col2:'',
+//Table_2_col3:'',
 /*TABLEAU DATA*/
 Tableau_Primarykey:'Row ID',
 Tableau_col1:'MY(Contract Date)',
@@ -46,8 +46,6 @@ Calculation2:'Sales',
 Tableau_WriteBack_column_sequence:5,
 /*TABLEAU LABEL*/
 lablel1:'Contract Date',
-lablel2:'',
-lablel3:'',
 /*Paths*/
 log_file:'',
 /*Rest Server Url*/
