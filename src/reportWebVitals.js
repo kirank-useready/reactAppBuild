@@ -11,3 +11,4 @@ const reportWebVitals = onPerfEntry => {
 };
 
 export default reportWebVitals;
+/*You can use it to log any of the results to the console or send to a particular endpoint. Default Reactjs File - for Measuring Purpose*/

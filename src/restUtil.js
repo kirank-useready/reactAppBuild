@@ -1,6 +1,7 @@
 import React from 'react'
 const {Config} = require('./Config.js');
 
+/*Used to Fetch Userrole */
 export function fetchUserRole(username='appadmin') {
     const requestOptions = {
         method: 'POST',

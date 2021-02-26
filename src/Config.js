@@ -21,7 +21,6 @@ Table_1_col4:'Customer_ID',
 Table_1_col5:'Profit',
 Table_1_col6:'Ship_Date',
 Table_1_col7:'Order_Date',
-Table_1_col8:'Order_Date',
 Table_WriteBack:'Forecast_Amount',
 //Table_2_Primarykey:'Row_ID',
 //Table_2_col1:'',
@@ -47,7 +46,10 @@ Tableau_WriteBack_column_sequence:5,
 /*TABLEAU LABEL*/
 lablel1:'Contract Date',
 /*Paths*/
-log_file:'',
+//log_file:'',
+/*User Role*/
+ReadOnlyRole1:'Viewer',
+ReadOnlyRole2:'viewer',
 /*Rest Server Url*/
 rest_server_url:'https://uracme-waitress.useready.com:9443/tableauextensions/writeback/api/'
 }

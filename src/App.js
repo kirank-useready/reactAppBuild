@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-
 import Extension from "./Extension";
-import TestInsertEndPoints from "./testinsertendpoints";
-import TestUpdateEndPoints from "./testupdateendpoints";
 require("./App.css");
 const {Config} = require('./Config.js'); 
 
@@ -26,6 +23,7 @@ function App() {
     sendUsername();
   },[]);
 
+  /*Its used for getting and setting Username*/
   const sendUsername = ()=> {
     const requestOptions = {
       method: 'POST',
@@ -40,11 +38,6 @@ function App() {
 
 return (
     <Extension/> 
-  // <TestInsertEndPoints/><Extension username={username}/>
-  // <React.Fragment>
-  //   {/* <p>My Token = {window.token}</p> */}
-  //   <TestUpdateEndPoints/>
-  // </React.Fragment>
   );
 }
 

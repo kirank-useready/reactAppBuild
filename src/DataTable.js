@@ -1,19 +1,12 @@
 import React, {useState, useEffect} from "react";
-import { AutoSizer, MultiGrid } from 'react-virtualized';
 import './DataTable.css';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from "@material-ui/lab/Alert";
-import Slide from '@material-ui/core/Slide';
-import { ImageFilter2 } from "material-ui/svg-icons";
 const {Config} = require('./Config.js');
 
 //Needed
-const { tableau } = window;
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 const useStyles = makeStyles({
     container: {
         paddingTop: "6%",
@@ -78,10 +71,9 @@ const useStyles = makeStyles({
     }
   }))(Button);
 
-
+/*This is the functional component */
 function DataTable(props) {
     const [editAdjustedForecast, setAdjustedForecast] = React.useState({});
-    const [dialogOpen, setDialogOpen] = React.useState(false);
     const [field, setField] = React.useState({});
     const [open, setOpen] = React.useState(false);
     const [erropen, setErrorOpen] = React.useState(false)
@@ -92,8 +84,9 @@ function DataTable(props) {
     let writebackDataCopy = [];
     const [username, setUsername] = React.useState();
     
+    /*React Hook Method*/
     useEffect(() => {
-      console.log('under DT, endpoint getuserrole');
+      //console.log('under DT, endpoint getuserrole');
       const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -117,6 +110,7 @@ function DataTable(props) {
         setErrorOpen(false);
       };
 
+      /*Used to refresh worksheet data on success*/
     function CheckError(response) {
       if (response.status >= 200 && response.status <= 299) {
         refreshWorksheetData();
@@ -125,9 +119,9 @@ function DataTable(props) {
         console.log(response.statusText);
       }
     }
+    /* This is the function that will use to save functinality*/
     const handleSave = () => {
       console.log("writebckcopy",JSON.stringify(writebackDataCopy)); 
-      setOpen(true);
       try{        
         const requestOptions = {
             method: 'POST',
@@ -137,28 +131,28 @@ function DataTable(props) {
         fetch(Config.rest_server_url+'updatedata', requestOptions)
         .then(CheckError)
         .then((jsonResponse) => {
+          setOpen(true);
         }).catch((error) => {
-          
           console.log("error", error);
+          setErrorOpen(true);
         });
       }
       catch{
         setErrorOpen(true);
       }
   }
+  /* This is the function that will use to refresh Tableau Sheet Data*/
   function refreshWorksheetData(){
           const worksheet = props.selectedSheet;
           worksheet.getDataSourcesAsync().then(sources => {
             for (var src in sources){
               sources[src].refreshAsync().then(function () {
                 console.log(sources[src].name + ': Refreshed Successfully');
-                // const message = sources[src].name + ': Refreshed Successfully';
-                // setMessage(message);
               });
             }
         })
     }
-
+/* This is the function that will get Tableau Data*/
     const getTableContent = headers => {
       console.log("rows",props.rows)
         let content = [];
@@ -203,14 +197,14 @@ function DataTable(props) {
                 const keys = measureKey.split('].[').join(',').split(':');
                     if(keys[1] == Config.Tableau_writeBack_Calculation || keys[1] == Config.Tableau_writeBack_Calculation_preview) {
                         column_name = Config.Tableau_WriteBack;
-                        writebackData[Config.Tableau_WriteBack] = props.rows[j][Config.Tableau_WriteBack_column_sequence];
+                        writebackData[Config.Table_WriteBack] = props.rows[j][Config.Tableau_WriteBack_column_sequence];
                     }
                      else if (keys[1] == Config.Calculation1){
                         column_name = Config.Tableau_col6;
                     } else {
                         column_name = keys[1];
                     }
-                if(['Viewer','viewer'].includes(userRole.role) || column_name != Config.Tableau_WriteBack){   // 
+                if([Config.ReadOnlyRole1,Config.ReadOnlyRole2].includes(userRole.role) || column_name != Config.Tableau_WriteBack){   // 
                     content.push(
                     <React.Fragment>
                     <div className={classes.row} id="form">
@@ -246,7 +240,7 @@ function DataTable(props) {
         }
         return content;
       };
-
+/* This is the function that uses for Input type operation*/
     const handleInputChange = event => {
         const target = event.target;
         const value = target.value;
@@ -282,7 +276,7 @@ function DataTable(props) {
         Couldnt save data to table..
         </Alert>
       </Snackbar> 
-      
+
     </div>
         )
 }

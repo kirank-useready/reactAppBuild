@@ -1,20 +1,15 @@
 import React, {useState, useEffect} from "react";
-import {Modal} from "react-bootstrap";
-import LoadingIndicator from "./LoadingIndicator";
-import SheetListComponent from "./SheetListComponent";
 import DataTable from "./DataTable";
 import {fetchUserRole} from './restUtil';
 const {tableau} = window;
 const {Config} = require('./Config.js'); 
 
 function Extension(props){
-//function Extension(){
     const [isLoading, setIsLoading] = useState(true);
     const [selectedSheet, setSelectedSheet] = useState(undefined);
     const [sheetNames, setSheetNames] = useState([]);
     const [rows, setRows] = useState([]);
     const [headers, setHeaders] = useState([]);
-    const [name, setName] = useState([]);
     const [userRole, setRole] = React.useState('');
     const [userName, setUsername] = React.useState('');
     console.log(props.role)
@@ -72,12 +67,6 @@ function Extension(props){
             setHeaders(headers);
             setIsLoading(false);
         });
-
-        
-        // worksheet.getSummaryDataAsync().then(dataTable => {
-        //       const field = dataTable.data[0][1].value;
-        // setHeaders(field);
-        //   })
         unregisterEventFnFilter = worksheet.addEventListener(tableau.TableauEventType.FilterChanged, () => {
             setIsLoading(true);
             loadSelectedMarks(sheet);
@@ -96,32 +85,15 @@ function Extension(props){
             loadSelectedMarks(sheet);
         });
     };
-
+/*This is part where extensions created*/
     const mainContent = (rows.length > 0)
         ? (<DataTable username={userName} role={userRole} rows={rows} headers={headers} selectedSheet={selectedSheet}/>)
         : (<h4>Please click on the table above to update adjusted forecast.</h4>);
 
 let output = <div>{mainContent}</div>;
-    //if (isLoading) {
-        //output = <LoadingIndicator msg='Loading' />;
-    //}
-    //(<DataTable username={props.username} rows={rows} headers={headers} selectedSheet={selectedSheet}/>)
-    // if(!selectedSheet){
-    //     output =
-    //         <Modal show>
-    //             <Modal.Header>
-    //                 <Modal.Title>Choose a Sheet</Modal.Title>
-    //             </Modal.Header>
-    //             <Modal.Body>
-    //                 <SheetListComponent sheetNames={sheetNames} onSelectSheet={onSelectSheet}/>
-    //             </Modal.Body>
-    //         </Modal>
-    // };
     return (
-        
         <div>
         <div>{output}</div>
-        {/* <div>{rows}</div> */}
         </div>
     );
 
