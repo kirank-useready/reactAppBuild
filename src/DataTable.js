@@ -249,10 +249,10 @@ function DataTable(props) {
        // writebackData[keyName] = value;
        console.log("rowheader",rowHeader)
        for(let i=0; i<writebackDataCopy.length;i++){
-         console.log("forwritbackcopy", writebackDataCopy[i].Row_ID)
-         if(writebackDataCopy[i].Row_ID == rowHeader){
-           writebackDataCopy[i].Forecast_Amount = value;
-         }
+         console.log("forwritbackcopy", writebackDataCopy[i][Config.Table_1_Primarykey])
+         if(writebackDataCopy[i][Config.Table_1_Primarykey] == rowHeader){
+          writebackDataCopy[i][Config.Table_WriteBack] = value;
+        }
       
        }
         
