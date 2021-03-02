@@ -1,6 +1,6 @@
 import React from "react";
 import Button from '@material-ui/core/Button';
-import {rest_server_url} from './constants'
+const {Config} = require('./Config.js');
 
 class TestInsertEndPoints extends React.Component {
     constructor(props) {
@@ -26,7 +26,7 @@ class TestInsertEndPoints extends React.Component {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(update_key)
             };     
-            fetch(rest_server_url+'updatedata', requestOptions)
+            fetch(Config.rest_server_url+'updatedata', requestOptions)
                 .then(response => {
                 console.log(response.json());
             });
@@ -49,7 +49,7 @@ class TestInsertEndPoints extends React.Component {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(userobj)
             };     
-            fetch(rest_server_url+'getuserrole', requestOptions)
+            fetch(Config.rest_server_url+'getuserrole', requestOptions)
                 .then(response => {
                 console.log(response.json());
             });
@@ -72,7 +72,7 @@ class TestInsertEndPoints extends React.Component {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(insert_key)
             };     
-            fetch(rest_server_url+'insertdata', requestOptions)
+            fetch(Config.rest_server_url+'insertdata', requestOptions)
                 .then(response => {
                 console.log(response.json());
             });

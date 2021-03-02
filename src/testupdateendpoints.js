@@ -1,8 +1,7 @@
 import React  from "react";
 import Button from '@material-ui/core/Button';
-import {rest_server_url} from './constants'
 const {tableau} = window;
-const {tableausheetName} = require('./SheetsModule.js'); 
+const {Config} = require('./Config.js'); 
 
 class TestUpdateEndPoints extends React.Component {
     constructor(props) {
@@ -36,7 +35,7 @@ class TestUpdateEndPoints extends React.Component {
         console.log("under comp did mount")
         if(this.state.username === ''){
             tableau.extensions.initializeAsync().then(() => {
-                const sheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === tableausheetName.sheet1);
+                const sheet = tableau.extensions.dashboardContent.dashboard.worksheets.find(worksheet => worksheet.name === Config.sheet1);
                 console.log(sheet)
                 sheet.getSummaryDataAsync().then(info => {
                 const username = info.data[0][1].value;
@@ -59,7 +58,7 @@ class TestUpdateEndPoints extends React.Component {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(update_payload)
             };     
-            fetch(rest_server_url+'updatedata', requestOptions)
+            fetch(Config.rest_server_url+'updatedata', requestOptions)
                 .then(response => {
                 console.log(response.json());
             });

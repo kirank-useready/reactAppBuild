@@ -1,3 +1,4 @@
+/*CSS Used In Extensions*/
 .cell {
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -44,3 +45,8 @@
 .link-button:focus {
     text-decoration: none;
 }
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: black;
+    opacity: 1; /* Firefox */
+  }
+  

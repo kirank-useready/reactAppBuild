@@ -1,13 +1,14 @@
 import React from 'react'
-import {rest_server_url} from './constants'
+const {Config} = require('./Config.js');
 
+/*Used to Fetch Userrole */
 export function fetchUserRole(username='appadmin') {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({'username' : username})
     };
-    return fetch(rest_server_url+'getuserrole', requestOptions)
+    return fetch(Config.rest_server_url+'getuserrole', requestOptions)
             .then(response => {
                return response.json()
             });
