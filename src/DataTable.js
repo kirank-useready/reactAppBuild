@@ -122,32 +122,11 @@ function DataTable(props) {
         console.log(response.statusText);
       }
     }
-    // Updatedata = data => {
-    //   try{        
-    //     const requestOptions = {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify(data)
-    //     };
-    //     fetch(Config.rest_server_url+'updatedata', requestOptions)
-    //     .then(CheckError)
-    //     .then((jsonResponse) => {
-    //       setOpen(true);
-    //     }).catch((error) => {
-    //       console.log("error", error);
-    //       setErrorOpen(true);
-    //     });
-    //   }
-    //   catch{
-    //     setErrorOpen(true);
-    //   }
-    // }
+    
     /* This is the function that will use to save functinality*/
      const handleSave = () => {
        console.log("writbackcopy",JSON.stringify(writebackDataCopy))
        console.log("auditcopy",JSON.stringify(writebackAuditCopy))
-       
-       const testdata= {"WB_User":"Useready","WB_Dashboard_name":"Writeback_dashborad","WB_Primary_key_name":"Row_ID","WB_Primary_key_value":"500","WB_Column_name":"Adjusted_Forecast","WB_Table_name":"Forecast","WB_Value":"9000"}
       Promise.all([
         fetch(Config.rest_server_url+'updatedata', 
         { method: 'POST', 
