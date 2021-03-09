@@ -50,6 +50,16 @@ lablel1:'Contract Date',
 /*User Role*/
 ReadOnlyRole1:'Viewer',
 ReadOnlyRole2:'viewer',
+/*Audit table*/
+WB_User: 'WB_User',
+WB_Dashboard_name:'WB_Dashboard_name',
+WB_Primary_key_name:'WB_Primary_key_name',
+WB_Primary_key_value:'WB_Primary_key_value',
+WB_Column_name:'WB_Column_name',
+WB_Table_name:'WB_Table_name',
+WB_Value:'WB_Value',
+
+   
 /*Rest Server Url*/
 rest_server_url:'https://uracme-waitress.useready.com:9443/server/tableauextensions/writeback/api/'
 }

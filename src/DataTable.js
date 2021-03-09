@@ -5,6 +5,7 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from "@material-ui/lab/Alert";
+import { zIndex } from "material-ui/styles";
 const {Config} = require('./Config.js');
 
 //Needed
@@ -83,6 +84,7 @@ function DataTable(props) {
     const keys = [Config.Tableau_col1,Config.Tableau_col7, Config.Tableau_col6, Config.Tableau_col3,Config.Tableau_col2];
     const [message, setMessage] = React.useState('');
     let writebackDataCopy = [];
+    let writebackAuditCopy = [];
     const [username, setUsername] = React.useState();
     
     /*React Hook Method*/
@@ -120,27 +122,61 @@ function DataTable(props) {
         console.log(response.statusText);
       }
     }
+    // Updatedata = data => {
+    //   try{        
+    //     const requestOptions = {
+    //         method: 'POST',
+    //         headers: { 'Content-Type': 'application/json' },
+    //         body: JSON.stringify(data)
+    //     };
+    //     fetch(Config.rest_server_url+'updatedata', requestOptions)
+    //     .then(CheckError)
+    //     .then((jsonResponse) => {
+    //       setOpen(true);
+    //     }).catch((error) => {
+    //       console.log("error", error);
+    //       setErrorOpen(true);
+    //     });
+    //   }
+    //   catch{
+    //     setErrorOpen(true);
+    //   }
+    // }
     /* This is the function that will use to save functinality*/
-    const handleSave = () => {
-      console.log("writebckcopy",JSON.stringify(writebackDataCopy)); 
-      try{        
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(writebackDataCopy)
-        };
-        fetch(Config.rest_server_url+'updatedata', requestOptions)
-        .then(CheckError)
-        .then((jsonResponse) => {
+     const handleSave = () => {
+       console.log("writbackcopy",JSON.stringify(writebackDataCopy))
+       console.log("auditcopy",JSON.stringify(writebackAuditCopy))
+       
+       const testdata= {"WB_User":"Useready","WB_Dashboard_name":"Writeback_dashborad","WB_Primary_key_name":"Row_ID","WB_Primary_key_value":"500","WB_Column_name":"Adjusted_Forecast","WB_Table_name":"Forecast","WB_Value":"9000"}
+      Promise.all([
+        fetch(Config.rest_server_url+'updatedata', 
+        { method: 'POST', 
+        headers: { 'Content-Type': 'application/json', }, 
+        body: JSON.stringify(writebackDataCopy), }),
+        fetch(Config.rest_server_url+'audittable', 
+        { method: 'POST', 
+        headers: { 'Content-Type': 'application/json', }, 
+        body: JSON.stringify(writebackAuditCopy), })
+      ])
+      .then(function (responses) {
+        // Get a JSON object from each of the responses
+        return Promise.all(responses.map(function (response,index) {
+         if(index == 0){
           setOpen(true);
-        }).catch((error) => {
-          console.log("error", error);
-          setErrorOpen(true);
-        });
-      }
-      catch{
+          CheckError(response)
+         }
+         else {
+           return response.json()
+         }
+        
+        }));
+      }).then(function (data) {
+        
+      }).catch(function (error) {
+        // if there's an error, log it
         setErrorOpen(true);
-      }
+      })
+
   }
   /* This is the function that will use to refresh Tableau Sheet Data*/
   function refreshWorksheetData(){
@@ -162,12 +198,18 @@ function DataTable(props) {
         console.log("headers",headers)
         for(let j =0;j< props.rows.length;j++){
           let writebackData = new Object();
+          let writeBackAuditdata = new Object();
             for (let i = 0; i < headers.length; i++) {
              
               if(db_keys.includes(headers[i])) {
                 if(headers[i] == Config.Tableau_Primarykey){
                   headersName = props.rows[j][i];
                   writebackData[Config.Table_1_Primarykey] = props.rows[j][i].toString();
+                  writeBackAuditdata[Config.WB_Primary_key_name] = Config.Table_1_Primarykey;
+                  writeBackAuditdata[Config.WB_Primary_key_value] = props.rows[j][i].toString();
+                }
+                else if(headers[i] == Config.Tableau_col2){
+                  writeBackAuditdata[Config.WB_User] = props.rows[j][i].toString();
                 }
                 else {
                   writebackData[headers[i]] = props.rows[j][i];
@@ -199,6 +241,8 @@ function DataTable(props) {
                     if(keys[1] == Config.Tableau_writeBack_Calculation || keys[1] == Config.Tableau_writeBack_Calculation_preview) {
                         column_name = Config.Tableau_WriteBack;
                         writebackData[Config.Table_WriteBack] = props.rows[j][Config.Tableau_WriteBack_column_sequence].toString();
+                        writeBackAuditdata[Config.WB_Value]= props.rows[j][Config.Tableau_WriteBack_column_sequence].toString();
+                        writeBackAuditdata[Config.WB_Column_name] = Config.Tableau_WriteBack;
                     }
                      else if (keys[1] == Config.Calculation1){
                         column_name = Config.Tableau_col6;
@@ -237,7 +281,11 @@ function DataTable(props) {
                 }
             }
             }
+            writeBackAuditdata[Config.WB_Dashboard_name]="Dashboard1";
+            writeBackAuditdata[Config.WB_Table_name]="Forcast";
             writebackDataCopy = [...writebackDataCopy,writebackData];
+            writebackAuditCopy = [...writebackAuditCopy,writeBackAuditdata];
+            
         }
         return content;
       };
@@ -253,6 +301,7 @@ function DataTable(props) {
          console.log("forwritbackcopy", writebackDataCopy[i][Config.Table_1_Primarykey])
          if(writebackDataCopy[i][Config.Table_1_Primarykey] == rowHeader){
           writebackDataCopy[i][Config.Table_WriteBack] = value;
+          writebackAuditCopy[i][Config.WB_Value] = value;
         }
       
        }
