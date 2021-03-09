@@ -51,6 +51,6 @@ lablel1:'Contract Date',
 ReadOnlyRole1:'Viewer',
 ReadOnlyRole2:'viewer',
 /*Rest Server Url*/
-rest_server_url:'https://uracme-waitress.useready.com:9443/tableauextensions/writeback/api/'
+rest_server_url:'https://uracme-waitress.useready.com:9443/server/tableauextensions/writeback/api/'
 }
 module.exports = {Config};

@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import './DataTable.css';
+import SelectGroup from './Selectgroup';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -78,8 +79,8 @@ function DataTable(props) {
     const [open, setOpen] = React.useState(false);
     const [erropen, setErrorOpen] = React.useState(false)
     const [userRole, setRole] = React.useState('');
-    const db_keys = [Config.Tableau_col1,Config.Tableau_col7, Config.Tableau_col6, Config.Tableau_col3,Config.Tableau_Primarykey];
-    const keys = [Config.Tableau_col1,Config.Tableau_col7, Config.Tableau_col6, Config.Tableau_col3];
+    const db_keys = [Config.Tableau_col1,Config.Tableau_col7, Config.Tableau_col6, Config.Tableau_col3,Config.Tableau_col2,Config.Tableau_Primarykey];
+    const keys = [Config.Tableau_col1,Config.Tableau_col7, Config.Tableau_col6, Config.Tableau_col3,Config.Tableau_col2];
     const [message, setMessage] = React.useState('');
     let writebackDataCopy = [];
     const [username, setUsername] = React.useState();
@@ -166,7 +167,7 @@ function DataTable(props) {
               if(db_keys.includes(headers[i])) {
                 if(headers[i] == Config.Tableau_Primarykey){
                   headersName = props.rows[j][i];
-                  writebackData[Config.Table_1_Primarykey] = props.rows[j][i];
+                  writebackData[Config.Table_1_Primarykey] = props.rows[j][i].toString();
                 }
                 else {
                   writebackData[headers[i]] = props.rows[j][i];
@@ -197,7 +198,7 @@ function DataTable(props) {
                 const keys = measureKey.split('].[').join(',').split(':');
                     if(keys[1] == Config.Tableau_writeBack_Calculation || keys[1] == Config.Tableau_writeBack_Calculation_preview) {
                         column_name = Config.Tableau_WriteBack;
-                        writebackData[Config.Table_WriteBack] = props.rows[j][Config.Tableau_WriteBack_column_sequence];
+                        writebackData[Config.Table_WriteBack] = props.rows[j][Config.Tableau_WriteBack_column_sequence].toString();
                     }
                      else if (keys[1] == Config.Calculation1){
                         column_name = Config.Tableau_col6;
@@ -263,6 +264,7 @@ function DataTable(props) {
     const classes = useStyles();
     return (
         <div className={classes.container}>
+          <SelectGroup></SelectGroup>
         <div>
             {getTableContent(props.headers)}
         </div>
